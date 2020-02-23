@@ -57,7 +57,7 @@ func main() {
 			var cmd *exec.Cmd
 			cmdSignal := make(chan *processSignal, 1)
 			go runCommand(cmd, c.Args(), cmdSignal)
-			go handleWatchEvents(watcher, cmdSignal, c.Bool("dir"))
+			go handleWatchEvents(watcher, cmdSignal, c.Bool("dir"), c.Bool("exit"))
 
 			startFileWatch(watcher)
 
@@ -78,6 +78,10 @@ func main() {
 				Name:    "dir",
 				Aliases: []string{"d"},
 				Usage:   "Track the directories of regular files provided as input and exit if a new file is added.",
+			},
+			&cli.BoolFlag{
+				Name:    "exit",
+				Usage:   "Always exit on all modifications",
 			},
 		},
 	}
@@ -102,7 +106,7 @@ func startFileWatch(watcher *fsnotify.Watcher) {
 	}
 }
 
-func handleWatchEvents(watcher *fsnotify.Watcher, cmdSignal chan *processSignal, watchDirs bool) {
+func handleWatchEvents(watcher *fsnotify.Watcher, cmdSignal chan *processSignal, watchDirs bool, exitProcess bool) {
 	for {
 		select {
 		case event, ok := <-watcher.Events:
@@ -112,10 +116,10 @@ func handleWatchEvents(watcher *fsnotify.Watcher, cmdSignal chan *processSignal,
 			var signal *processSignal
 			if event.Op == fsnotify.Write || event.Op == fsnotify.Chmod {
 				logrus.Debugf("modified file: %s", event.Name)
-				signal = &processSignal{signal: syscall.SIGTERM, exitProcess: false}
+				signal = &processSignal{signal: syscall.SIGTERM, exitProcess: exitProcess}
 			} else if event.Op == fsnotify.Create && watchDirs {
 				logrus.Debugf("created: %s", event.Name)
-				signal = &processSignal{signal: syscall.SIGTERM, exitProcess: true}
+				signal = &processSignal{signal: syscall.SIGTERM, exitProcess: exitProcess}
 			}
 			if signal == nil {
 				return
