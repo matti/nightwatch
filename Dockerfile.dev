@@ -1,0 +1,16 @@
+FROM golang:1.13 AS builder
+ENV BUILD_ARCHS linux/amd64
+ENV VERSION matti-1
+
+WORKDIR /src
+COPY . /src
+
+RUN go mod download
+RUN make test
+RUN GO111MODULE=off go get github.com/mitchellh/gox
+RUN make build
+
+FROM scratch
+COPY --from=builder /src/output/* /
+
+ENTRYPOINT [ "/nightwatch_linux_amd64" ]

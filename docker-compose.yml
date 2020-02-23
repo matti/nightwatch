@@ -1,0 +1,8 @@
+version: "3.6"
+
+services:
+  nightwatch:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: mattipaksula/nightwatch:matti-1
