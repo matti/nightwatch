@@ -11,6 +11,6 @@ RUN GO111MODULE=off go get github.com/mitchellh/gox
 RUN make build
 
 FROM scratch
-COPY --from=builder /src/output/* /
+COPY --from=builder /src/output/nightwatch_linux_amd64 /nightwatch
 
-ENTRYPOINT [ "/nightwatch_linux_amd64" ]
+ENTRYPOINT [ "/nightwatch" ]
