@@ -11,7 +11,7 @@ Download `nightwatch` from [releases](https://github.com/jakolehm/nightwatch/rel
 
 COPY for Dockerfile:
 ```
-COPY --from=jakolehm/nightwatch-amd64:0.2.2 /nightwatch /usr/bin
+COPY --from=jakolehm/nightwatch-amd64:0.4 /nightwatch /usr/bin
 ```
 or
 ```
