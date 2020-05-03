@@ -28,7 +28,7 @@ func main() {
 		Version: Version,
 		Usage:   "A utility for running arbitrary commands when files change",
 		Before: func(ctx *cli.Context) error {
-			if ctx.Bool("debug") {
+			if ctx.Bool("debug") || os.Getenv("NIGHTWATCH_DEBUG") == "yes" {
 				logrus.SetLevel(logrus.DebugLevel)
 			}
 

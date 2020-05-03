@@ -11,7 +11,8 @@ services:
     build: go-gin-gonic
     volumes:
       - ./go-gin-gonic:/app
-
+    environment:
+      - NIGHTWATCH_DEBUG=${NIGHTWATCH_DEBUG:-no}
   example:
     build: .
     volumes:
